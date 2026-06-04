@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="习惯星球 - 养成好习惯，看见每一天的进步">
+  <meta name="theme-color" content="#6366f1">
+  <link rel="manifest" href="manifest.json">
+  <title>习惯星球 HabitPlanet</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+  <!-- 首次引导 -->
+  <div id="onboarding" class="onboarding hidden">
+    <div class="onboarding-inner">
+      <div class="onboarding-step active" data-step="0">
+        <div class="onboarding-emoji">🌍</div>
+        <h1>欢迎来到习惯星球</h1>
+        <p>在这里，每一个小习惯都是一颗星星。<br>坚持打卡，点亮你的星空。</p>
+      </div>
+      <div class="onboarding-step" data-step="1">
+        <div class="onboarding-emoji">✅</div>
+        <h2>每日一键打卡</h2>
+        <p>创建习惯后，每天只需轻轻一点<br>记录你的坚持。</p>
+      </div>
+      <div class="onboarding-step" data-step="2">
+        <div class="onboarding-emoji">🔥</div>
+        <h2>连续天数激励</h2>
+        <p>Streak 火焰会提醒你：<br>别断签，你比想象中更强大。</p>
+      </div>
+      <div class="onboarding-step" data-step="3">
+        <div class="onboarding-emoji">📊</div>
+        <h2>数据可视化</h2>
+        <p>热力图、完成率、成就徽章<br>让进步看得见。</p>
+      </div>
+      <div class="onboarding-dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+      <div class="onboarding-actions">
+        <button type="button" class="btn btn-ghost" id="onboarding-skip">跳过</button>
+        <button type="button" class="btn btn-primary" id="onboarding-next">下一步</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app" id="app">
+    <!-- 侧边栏（桌面） -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">🌍</span>
+        <span class="brand-text">习惯星球</span>
+      </div>
+      <ul class="nav-list">
+        <li><button type="button" class="nav-item active" data-page="today">
+          <span class="nav-icon">☀️</span><span>今日</span>
+        </button></li>
+        <li><button type="button" class="nav-item" data-page="habits">
+          <span class="nav-icon">📋</span><span>习惯</span>
+        </button></li>
+        <li><button type="button" class="nav-item" data-page="stats">
+          <span class="nav-icon">📊</span><span>统计</span>
+        </button></li>
+        <li><button type="button" class="nav-item" data-page="settings">
+          <span class="nav-icon">⚙️</span><span>设置</span>
+        </button></li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="streak-badge" id="sidebar-streak">
+          <span class="streak-fire">🔥</span>
+          <span class="streak-count">0</span>
+          <span class="streak-label">最长连续</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <!-- 今日页 -->
+      <section class="page active" id="page-today">
+        <header class="page-header">
+          <div class="greeting">
+            <h1 id="greeting-text">早上好</h1>
+            <p class="date-text" id="date-text"></p>
+            <p class="quote-text" id="quote-text"></p>
+          </div>
+        </header>
+
+        <div class="today-hero">
+          <div class="progress-ring-wrap">
+            <svg class="progress-ring" viewBox="0 0 120 120">
+              <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
+              <circle class="progress-ring-fill" id="progress-ring-fill" cx="60" cy="60" r="52"/>
+            </svg>
+            <div class="progress-ring-text">
+              <span class="progress-percent" id="progress-percent">0%</span>
+              <span class="progress-label" id="progress-label">0/0 完成</span>
+            </div>
+          </div>
+          <div class="today-stats">
+            <div class="stat-pill">
+              <span class="stat-pill-value" id="today-streak">0</span>
+              <span class="stat-pill-label">今日连续</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-pill-value" id="week-rate">0%</span>
+              <span class="stat-pill-label">本周完成率</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="reminder-banner hidden" id="reminder-banner">
+          <div class="reminder-banner-content">
+            <span class="reminder-banner-icon">⏰</span>
+            <div class="reminder-banner-text">
+              <strong id="reminder-banner-title">还有习惯未完成</strong>
+              <span id="reminder-banner-desc"></span>
+            </div>
+          </div>
+          <button type="button" class="btn btn-sm btn-primary" id="reminder-banner-dismiss">知道了</button>
+        </div>
+
+        <div class="section-header">
+          <h2>今日习惯</h2>
+          <button type="button" class="btn btn-sm btn-primary" id="quick-add-habit">+ 添加</button>
+        </div>
+
+        <div class="habit-list" id="today-habit-list"></div>
+
+        <div class="empty-state hidden" id="today-empty">
+          <div class="empty-icon">🌱</div>
+          <h3>还没有习惯</h3>
+          <p>创建你的第一个习惯，开始改变吧！</p>
+          <button type="button" class="btn btn-primary" id="empty-add-habit">创建第一个习惯</button>
+        </div>
+      </section>
+
+      <!-- 习惯管理页 -->
+      <section class="page" id="page-habits">
+        <header class="page-header">
+          <h1>习惯管理</h1>
+          <button type="button" class="btn btn-primary" id="add-habit-btn">+ 新建习惯</button>
+        </header>
+
+        <div class="filter-bar" id="category-filter">
+          <button type="button" class="filter-chip active" data-category="all">全部</button>
+          <button type="button" class="filter-chip" data-category="health">🏃 健康</button>
+          <button type="button" class="filter-chip" data-category="study">📚 学习</button>
+          <button type="button" class="filter-chip" data-category="life">🏠 生活</button>
+          <button type="button" class="filter-chip" data-category="work">💼 工作</button>
+          <button type="button" class="filter-chip" data-category="archived">📦 已归档</button>
+        </div>
+
+        <div class="habit-grid" id="habit-grid"></div>
+
+        <div class="empty-state hidden" id="habits-empty">
+          <div class="empty-icon">📝</div>
+          <h3>暂无习惯</h3>
+          <p>点击上方按钮创建你的第一个习惯</p>
+        </div>
+      </section>
+
+      <!-- 统计页 -->
+      <section class="page" id="page-stats">
+        <header class="page-header">
+          <h1>数据统计</h1>
+        </header>
+
+        <div class="stats-cards">
+          <div class="stat-card">
+            <span class="stat-card-icon">📅</span>
+            <span class="stat-card-value" id="stat-total-days">0</span>
+            <span class="stat-card-label">累计打卡天</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-icon">✅</span>
+            <span class="stat-card-value" id="stat-total-checkins">0</span>
+            <span class="stat-card-label">总打卡次数</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-icon">🔥</span>
+            <span class="stat-card-value" id="stat-best-streak">0</span>
+            <span class="stat-card-label">最长连续</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-icon">📈</span>
+            <span class="stat-card-value" id="stat-month-rate">0%</span>
+            <span class="stat-card-label">本月完成率</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>本周完成趋势</h2>
+          <div class="week-chart" id="week-chart"></div>
+        </div>
+
+        <div class="panel">
+          <h2>本月日历</h2>
+          <div class="month-calendar" id="month-calendar"></div>
+        </div>
+
+        <div class="panel">
+          <h2>打卡热力图</h2>
+          <p class="panel-desc">过去 12 周的坚持记录</p>
+          <div class="heatmap-wrap">
+            <div class="heatmap" id="heatmap"></div>
+            <div class="heatmap-legend">
+              <span>少</span>
+              <span class="heatmap-cell level-0"></span>
+              <span class="heatmap-cell level-1"></span>
+              <span class="heatmap-cell level-2"></span>
+              <span class="heatmap-cell level-3"></span>
+              <span class="heatmap-cell level-4"></span>
+              <span>多</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>习惯排行</h2>
+          <div class="habit-ranking" id="habit-ranking"></div>
+        </div>
+
+        <div class="panel">
+          <h2>成就徽章</h2>
+          <div class="achievements-grid" id="achievements-grid"></div>
+        </div>
+      </section>
+
+      <!-- 设置页 -->
+      <section class="page" id="page-settings">
+        <header class="page-header">
+          <h1>设置</h1>
+        </header>
+
+        <div class="settings-group">
+          <h2>提醒与通知</h2>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">浏览器通知</span>
+              <span class="setting-desc">到点提醒未完成的习惯</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notifications-toggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">每周报告</span>
+              <span class="setting-desc">每周一推送上周总结</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="weekly-report-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">查看上周报告</span>
+              <span class="setting-desc">手动打开周报</span>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="view-weekly-report">查看</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h2>外观</h2>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">深色模式</span>
+              <span class="setting-desc">切换浅色 / 深色主题</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="theme-toggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h2>云同步</h2>
+          <div class="sync-status-card" id="sync-status-card">
+            <div class="sync-status-row">
+              <span class="sync-status-dot" id="sync-status-dot"></span>
+              <div class="sync-status-info">
+                <span class="sync-status-label" id="sync-status-label">未开启</span>
+                <span class="sync-status-desc" id="sync-status-desc">多设备实时同步习惯数据</span>
+              </div>
+            </div>
+            <div class="sync-id-display hidden" id="sync-id-display">
+              <span>同步 ID：</span>
+              <code id="sync-id-text"></code>
+              <button type="button" class="btn-copy" id="copy-sync-id" title="复制">📋</button>
+            </div>
+            <p class="sync-last-time" id="sync-last-time"></p>
+            <div class="sync-actions" id="sync-actions-disconnected">
+              <button type="button" class="btn btn-primary btn-sm" id="sync-create">创建同步空间</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="sync-join">加入同步空间</button>
+            </div>
+            <div class="sync-actions hidden" id="sync-actions-connected">
+              <button type="button" class="btn btn-secondary btn-sm" id="sync-now">立即同步</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="sync-disconnect">断开连接</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">同步服务器</span>
+              <span class="setting-desc">默认 localhost:8787，部署后改为你的服务器地址</span>
+            </div>
+          </div>
+          <label class="field field-inline">
+            <input type="url" id="sync-server-url" placeholder="http://localhost:8787">
+          </label>
+        </div>
+
+        <div class="settings-group">
+          <h2>数据</h2>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">导出数据</span>
+              <span class="setting-desc">下载 JSON 格式的备份文件</span>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="export-data">导出</button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-label">导入数据</span>
+              <span class="setting-desc">从备份文件恢复</span>
+            </div>
+            <label class="btn btn-secondary btn-sm">
+              导入
+              <input type="file" id="import-data" accept=".json" hidden>
+            </label>
+          </div>
+          <div class="setting-row danger">
+            <div class="setting-info">
+              <span class="setting-label">清除所有数据</span>
+              <span class="setting-desc">此操作不可恢复</span>
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" id="clear-data">清除</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h2>关于</h2>
+          <div class="about-card">
+            <span class="about-icon">🌍</span>
+            <div>
+              <strong>习惯星球 HabitPlanet</strong>
+              <p>v1.2.0 · 养成好习惯，看见每一天的进步</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 移动端底部导航 -->
+    <nav class="bottom-nav" id="bottom-nav">
+      <button type="button" class="bottom-nav-item active" data-page="today">
+        <span>☀️</span><span>今日</span>
+      </button>
+      <button type="button" class="bottom-nav-item" data-page="habits">
+        <span>📋</span><span>习惯</span>
+      </button>
+      <button type="button" class="bottom-nav-item" data-page="stats">
+        <span>📊</span><span>统计</span>
+      </button>
+      <button type="button" class="bottom-nav-item" data-page="settings">
+        <span>⚙️</span><span>设置</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- 习惯编辑模态框 -->
+  <div class="modal hidden" id="habit-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="habit-modal-title">新建习惯</h2>
+        <button type="button" class="modal-close" id="habit-modal-close">&times;</button>
+      </div>
+      <form id="habit-form">
+        <input type="hidden" id="habit-id">
+        <label class="field">
+          <span>习惯名称</span>
+          <input type="text" id="habit-name" placeholder="例如：阅读 30 分钟" required maxlength="30">
+        </label>
+        <label class="field">
+          <span>分类</span>
+          <select id="habit-category">
+            <option value="health">🏃 健康</option>
+            <option value="study">📚 学习</option>
+            <option value="life">🏠 生活</option>
+            <option value="work">💼 工作</option>
+          </select>
+        </label>
+        <div class="field">
+          <span>图标</span>
+          <div class="icon-picker" id="icon-picker"></div>
+        </div>
+        <div class="field">
+          <span>颜色</span>
+          <div class="color-picker" id="color-picker"></div>
+        </div>
+        <div class="field" id="template-field">
+          <span>快速模板</span>
+          <div class="template-picker" id="template-picker"></div>
+        </div>
+        <div class="field">
+          <span>每日提醒</span>
+          <div class="reminder-field">
+            <label class="toggle toggle-sm">
+              <input type="checkbox" id="habit-reminder-enabled">
+              <span class="toggle-slider"></span>
+            </label>
+            <input type="time" id="habit-reminder-time" value="08:00">
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="habit-cancel">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 打卡备注模态框 -->
+  <div class="modal hidden" id="note-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h2 id="note-modal-title">打卡备注</h2>
+        <button type="button" class="modal-close" id="note-modal-close">&times;</button>
+      </div>
+      <p class="note-habit-name" id="note-habit-name"></p>
+      <label class="field">
+        <span>今日感想（可选）</span>
+        <textarea id="note-text" rows="3" placeholder="记录今天的感受或进展..." maxlength="200"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="note-skip">跳过</button>
+        <button type="button" class="btn btn-primary" id="note-save">完成打卡</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 周报模态框 -->
+  <div class="modal hidden" id="weekly-report-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h2>📋 上周总结</h2>
+        <button type="button" class="modal-close" id="weekly-report-close">&times;</button>
+      </div>
+      <p class="weekly-report-range" id="weekly-report-range"></p>
+      <div class="weekly-report-stats" id="weekly-report-stats"></div>
+      <div class="weekly-report-chart" id="weekly-report-chart"></div>
+      <div class="weekly-report-top" id="weekly-report-top"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="weekly-report-ok">继续加油 💪</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 云同步模态框 -->
+  <div class="modal hidden" id="sync-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h2 id="sync-modal-title">加入同步空间</h2>
+        <button type="button" class="modal-close" id="sync-modal-close">&times;</button>
+      </div>
+      <div id="sync-modal-create" class="hidden">
+        <p class="sync-modal-desc">在其他设备上输入以下凭证即可同步：</p>
+        <div class="sync-credential">
+          <label>同步 ID</label>
+          <div class="credential-row">
+            <code id="new-sync-id"></code>
+            <button type="button" class="btn-copy" data-copy="new-sync-id">📋</button>
+          </div>
+        </div>
+        <div class="sync-credential">
+          <label>密钥（请妥善保管）</label>
+          <div class="credential-row">
+            <code id="new-sync-token" class="token-text"></code>
+            <button type="button" class="btn-copy" data-copy="new-sync-token">📋</button>
+          </div>
+        </div>
+        <p class="sync-modal-hint">⚠️ 密钥只显示一次，请立即保存到安全的地方</p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-primary" id="sync-create-done">我已保存，开始同步</button>
+        </div>
+      </div>
+      <div id="sync-modal-join">
+        <label class="field">
+          <span>同步 ID</span>
+          <input type="text" id="join-sync-id" placeholder="例如：AB12CD34" maxlength="8" autocapitalize="characters">
+        </label>
+        <label class="field">
+          <span>密钥</span>
+          <input type="text" id="join-sync-token" placeholder="粘贴 48 位密钥">
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="sync-join-cancel">取消</button>
+          <button type="button" class="btn btn-primary" id="sync-join-confirm">连接并同步</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 确认对话框 -->
+  <div class="modal hidden" id="confirm-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h2 id="confirm-title">确认</h2>
+      </div>
+      <p id="confirm-message"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="confirm-cancel">取消</button>
+        <button type="button" class="btn btn-danger" id="confirm-ok">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 庆祝画布 -->
+  <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+
+  <!-- Toast 通知 -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

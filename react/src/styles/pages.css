@@ -1,0 +1,91 @@
+/* Onboarding */
+.onboarding {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.onboarding-inner {
+  text-align: center;
+  color: white;
+  max-width: 400px;
+  width: 100%;
+}
+
+.onboarding-step {
+  display: none;
+}
+
+.onboarding-step.active {
+  display: block;
+  animation: fadeIn 0.4s ease;
+}
+
+.onboarding-emoji {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  animation: bounce 1s ease infinite;
+}
+
+.onboarding-step h1,
+.onboarding-step h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.onboarding-step p {
+  font-size: 1rem;
+  opacity: 0.9;
+  line-height: 1.7;
+}
+
+.onboarding-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 32px 0 24px;
+}
+
+.onboarding-dots .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transition: all var(--transition);
+}
+
+.onboarding-dots .dot.active {
+  background: white;
+  width: 24px;
+  border-radius: 4px;
+}
+
+.onboarding-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.onboarding-actions .btn-ghost {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.onboarding-actions .btn-ghost:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.onboarding-actions .btn-primary {
+  background: white;
+  color: var(--color-primary);
+}
+
+.onboarding-actions .btn-primary:hover {
+  background: rgba(255, 255, 255, 0.9);
+}

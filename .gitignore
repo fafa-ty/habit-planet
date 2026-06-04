@@ -1,0 +1,13 @@
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+*.swp
+
+node_modules/
+react/node_modules/
+react/dist/
+
+# 同步服务器用户数据，勿上传
+server/data/
