@@ -75,9 +75,15 @@ python3 -m http.server 8766
 
 ## 文档
 
-- [竞品分析](docs/COMPETITOR_ANALYSIS.md)
-- [UI 设计规范（Figma）](docs/UI_SPEC.md)
-- [产品需求 PRD](PRD.md)
+| 文档 | 用途 |
+|------|------|
+| [三种场景索引](docs/README.md) | 朋友用 / 课程作业 / 面试作品集 |
+| [给朋友分享](docs/SHARE_FOR_FRIENDS.md) | 分享文案 + FAQ |
+| [课程作业提交包](docs/COURSE_SUBMISSION.md) | 提交清单 + 演示脚本 |
+| [面试作品集](docs/PORTFOLIO.md) | 一页纸 + 10 分钟话术 |
+| [竞品分析](docs/COMPETITOR_ANALYSIS.md) | Habitica / 小日常 / Done |
+| [UI 设计规范](docs/UI_SPEC.md) | Figma 线框规范 |
+| [产品需求 PRD](PRD.md) | 完整 PRD |
 
 ## 技术栈
 
